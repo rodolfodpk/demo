@@ -18,16 +18,12 @@ import javax.inject.Inject
 import kotlin.random.Random
 
 @Controller("/hello")
-class CustomerController(
-        @Inject private val controller: CommandController<Customer, CustomerCommand, CustomerEvent>,
-        @Inject private val projector: CustomerReadModelProjector,
-        @Inject private val publisher: PgcEventsPublisher<CustomerEvent>
-) {
+class CustomerController(@Inject private val controller: CommandController<Customer, CustomerCommand, CustomerEvent>) {
 
     @Get("/")
     @Produces(MediaType.TEXT_PLAIN)
     fun index(): Single<String> {
-        var id = Random(1000).nextInt()
+        val id = Random(1000).nextInt()
         val metadata = CommandMetadata(id)
         val command = CustomerCommand.RegisterCustomer(id, "customer#$id")
         return Single.create { emitter ->
