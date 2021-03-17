@@ -6,15 +6,20 @@ import io.github.crabzilla.pgc.PgcEventsPublisher
 import io.micronaut.context.annotation.Bean
 import io.micronaut.context.annotation.ConfigurationProperties
 import io.micronaut.context.annotation.Factory
+import io.micronaut.context.annotation.Primary
 import io.vertx.core.Vertx
 import io.vertx.pgclient.PgConnectOptions
 import io.vertx.pgclient.PgPool
 import io.vertx.sqlclient.PoolOptions
+import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
 
 @Factory
 class CustomerControllerFactory {
+
+    @Inject
+    private lateinit var natsPublish : CustomerNatsProjector
 
     @Bean
     @Singleton
@@ -34,11 +39,21 @@ class CustomerControllerFactory {
         return CustomerReadModelProjector(repository)
     }
 
-    @Bean
+    /*@Bean
     @Singleton
+    @Named("readModel")
     fun publisher(projector: CustomerReadModelProjector, @Named("writeDb") writeDb: PgPool):
             PgcEventsPublisher<CustomerEvent> {
-        return PgcEventsPublisher(projector, customerConfig.name.value, writeDb, customerJson)
+        return PgcEventsPublisher(projector, "Customer", writeDb, customerJson)
+    }*/
+
+    @Bean
+    @Singleton
+    @Primary
+    @Named("nats")
+    fun publisherNats(@Named("writeDb") writeDb: PgPool):
+            PgcEventsPublisher<CustomerEvent> {
+        return PgcEventsPublisher(natsPublish, "Customer", writeDb, customerJson)
     }
 
     @Singleton

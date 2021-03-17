@@ -22,6 +22,7 @@ class CustomerReadModelProjector(private val repo: CustomerRepository) : EventPu
   }
 }
 
+
 /**
  * Read model repository
  */

@@ -1,3 +1,11 @@
 micronaut:
   application:
     name: demo
+
+nats:
+  cluster-id: test-cluster
+  client-id: bar3
+  user: al
+  password: alisson
+  host: localhost
+  port: 4222
