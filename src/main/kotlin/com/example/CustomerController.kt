@@ -31,25 +31,25 @@ class CustomerController(
         val metadata = CommandMetadata(id)
         val command = CustomerCommand.RegisterCustomer(id, "customer#$id")
         return Single.create { emitter ->
-        controller.handle(metadata, command)
-                .onFailure {
-                    println("Deu ruim")
-                    it.printStackTrace()
-                    emitter.onError(it)
-                }
-                .onSuccess { ok: Either<List<String>, StatefulSession<Customer, CustomerEvent>> ->
-                    println("Deu bôa")
-                    when (ok) {
-                        is Either.Left -> {
-                            println("Validation error: " + ok.value.toString())
-                            emitter.onSuccess(ok.value.toString())
-                        }
-                        is Either.Right -> {
-                            println("Deu bôa mesmo: " + ok.value.currentState)
-                            emitter.onSuccess(ok.value.currentState.toString())
+            controller.handle(metadata, command)
+                    .onFailure {
+                        println("Deu ruim")
+                        it.printStackTrace()
+                        emitter.onError(it)
+                    }
+                    .onSuccess { ok: Either<List<String>, StatefulSession<Customer, CustomerEvent>> ->
+                        println("Deu bôa")
+                        when (ok) {
+                            is Either.Left -> {
+                                println("Validation error: " + ok.value.toString())
+                                emitter.onSuccess(ok.value.toString())
+                            }
+                            is Either.Right -> {
+                                println("Deu bôa mesmo: " + ok.value.currentState)
+                                emitter.onSuccess(ok.value.currentState.toString())
+                            }
                         }
                     }
-                }
         }
     }
 
