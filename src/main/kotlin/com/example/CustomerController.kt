@@ -14,18 +14,22 @@ import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.annotation.Produces
 import io.reactivex.Single
+import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 import kotlin.random.Random
 
 @Controller("/hello")
 class CustomerController(@Inject private val controller: CommandController<Customer, CustomerCommand, CustomerEvent>) {
 
+    val id =  AtomicInteger()
+
     @Get("/")
     @Produces(MediaType.TEXT_PLAIN)
     fun index(): Single<String> {
-        val id = Random(Int.MAX_VALUE).nextInt()
-        val metadata = CommandMetadata(id)
-        val command = CustomerCommand.RegisterCustomer(id, "customer#$id")
+        val newId = id.incrementAndGet()
+        println("Vai gerar um comando $newId")
+        val metadata = CommandMetadata(newId)
+        val command = CustomerCommand.RegisterCustomer(newId, "customer#$newId")
         return Single.create { emitter ->
             controller.handle(metadata, command)
                     .onFailure {
