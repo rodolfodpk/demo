@@ -23,7 +23,7 @@ class CustomerController(@Inject private val controller: CommandController<Custo
     @Get("/")
     @Produces(MediaType.TEXT_PLAIN)
     fun index(): Single<String> {
-        val id = Random(1000).nextInt()
+        val id = Random(Int.MAX_VALUE).nextInt()
         val metadata = CommandMetadata(id)
         val command = CustomerCommand.RegisterCustomer(id, "customer#$id")
         return Single.create { emitter ->

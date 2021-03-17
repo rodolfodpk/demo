@@ -17,21 +17,25 @@ import javax.inject.Singleton
 class CustomerControllerFactory {
 
     @Bean
+    @Singleton
     fun controller(@Named("writeDb") writeDb: PgPool): CommandController<Customer, CustomerCommand, CustomerEvent> {
         return CommandControllerFactory.create(customerConfig, writeDb)
     }
 
     @Bean
+    @Singleton
     fun repo(@Named("readDb") readDb: PgPool): CustomerRepository {
         return CustomerRepository(readDb)
     }
 
     @Bean
+    @Singleton
     fun readModelProjector(repository: CustomerRepository): CustomerReadModelProjector {
         return CustomerReadModelProjector(repository)
     }
 
     @Bean
+    @Singleton
     fun publisher(projector: CustomerReadModelProjector, @Named("writeDb") writeDb: PgPool):
             PgcEventsPublisher<CustomerEvent> {
         return PgcEventsPublisher(projector, customerConfig.name.value, writeDb, customerJson)
