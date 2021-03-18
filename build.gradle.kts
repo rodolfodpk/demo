@@ -28,7 +28,7 @@ micronaut {
 }
 
 val vertxVertion= "4.0.3"
-val crabzillaVersion = "0.0.9-snapshot-3"
+val crabzillaVersion = "0.0.9-snapshot-4"
 val kotlinSerializationVersion = "1.1.0"
 
 dependencies {

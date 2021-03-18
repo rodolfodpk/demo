@@ -1,6 +1,7 @@
 package com.example.domain.customer
 
 import io.github.crabzilla.core.CommandController
+import io.github.crabzilla.core.DefaultSnapshotRepo
 import io.github.crabzilla.pgc.CommandControllerFactory
 import io.github.crabzilla.pgc.PgcEventsPublisher
 import io.micronaut.context.annotation.Bean
@@ -18,26 +19,18 @@ class CustomerControllerFactory {
 
     @Bean
     @Singleton
-    fun controller(@Named("writeDb") writeDb: PgPool): CommandController<Customer, CustomerCommand, CustomerEvent> {
-        return CommandControllerFactory.create(customerConfig, writeDb)
+    fun controller(@Named("writeDb") writeDb: PgPool, vertx: Vertx): CommandController<Customer, CustomerCommand, CustomerEvent> {
+       val snapshotRepo =
+               DefaultSnapshotRepo<Customer, CustomerCommand, CustomerEvent>(vertx.sharedData(),
+                       customerJson, customerConfig.name.value)
+        return CommandControllerFactory.create(customerConfig, writeDb, snapshotRepo)
     }
 
     @Bean
     @Singleton
-    fun repo(@Named("readDb") readDb: PgPool): CustomerRepository {
-        return CustomerRepository(readDb)
-    }
-
-    @Bean
-    @Singleton
-    fun readModelProjector(repository: CustomerRepository): CustomerReadModelProjector {
-        return CustomerReadModelProjector(repository)
-    }
-
-    @Bean
-    @Singleton
-    fun publisher(projector: CustomerReadModelProjector, @Named("writeDb") writeDb: PgPool):
-            PgcEventsPublisher<CustomerEvent> {
+    @Named("read-model")
+    fun publisher(@Named("read-model") projector: CustomerReadModelProjector,
+                  @Named("writeDb") writeDb: PgPool): PgcEventsPublisher<CustomerEvent> {
         return PgcEventsPublisher(projector, customerConfig.name.value, writeDb, customerJson)
     }
 
@@ -76,7 +69,7 @@ class WriteDbConfig  {
     var dbName: String? = "example1_write"
     var dbUser: String? = "user1"
     var dbPassword: String? = "pwd1"
-    var poolSize: Int = 7
+    var poolSize: Int = 10
 }
 
 @ConfigurationProperties("read.database")
@@ -86,5 +79,5 @@ class ReadDbConfig  {
     var dbName: String? = "example1_read"
     var dbUser: String? = "user1"
     var dbPassword: String? = "pwd1"
-    var poolSize: Int = 7
+    var poolSize: Int = 10
 }
