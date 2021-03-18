@@ -35,6 +35,7 @@ class CustomerControllerFactory {
 
     @Bean
     @Singleton
+    @Named("readModelProjector")
     fun readModelProjector(repository: CustomerRepository): CustomerReadModelProjector {
         return CustomerReadModelProjector(repository)
     }
