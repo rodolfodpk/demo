@@ -51,8 +51,7 @@ wget -O- http://localhost:8080/hello
 ## Notes
 
 1. NATS is running in memory, so the messages are not persistent.
-2. There is a bug in Crabzilla: some component is not giving the db connection back to the pool. Until fixed, this demo will stop working after 3 or 4 requests.
-3. Since we are using an AtomicInteger to generate ids, every time you starts the application you need to recreate the database:
+2. Since we are using an AtomicInteger to generate ids, every time you starts the application you need to recreate the database:
 
 ```bash
 cd demo

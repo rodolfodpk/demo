@@ -6,14 +6,12 @@ import com.example.domain.customer.CustomerEvent
 import io.github.crabzilla.core.CommandController
 import io.github.crabzilla.core.CommandMetadata
 import io.github.crabzilla.core.Either
+import io.github.crabzilla.core.SessionData
 import io.github.crabzilla.core.StatefulSession
-import io.micronaut.http.MediaType
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
-import io.micronaut.http.annotation.Produces
 import io.reactivex.Single
 import org.slf4j.LoggerFactory
-import java.lang.IllegalArgumentException
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 
@@ -27,8 +25,7 @@ class CustomerController(@Inject private val controller: CommandController<Custo
     val id = AtomicInteger()
 
     @Get("/")
-    @Produces(MediaType.TEXT_PLAIN)
-    fun index(): Single<String> {
+    fun index(): Single<SessionData> {
         val newId = id.incrementAndGet()
         log.info("Vai gerar um comando $newId")
         val metadata = CommandMetadata(newId)
@@ -48,15 +45,9 @@ class CustomerController(@Inject private val controller: CommandController<Custo
                             emitter.onError(IllegalArgumentException(validationErrors.toString()))
                         }
                         is Either.Right -> {
-                            val session: StatefulSession<Customer, CustomerEvent> = result.value
-                            log.info("Deu bôa mesmo: ${session.currentState}")
-                            val response = """
-                                    Original version: ${session.originalVersion}
-                                    New version: ${session.originalVersion + 1}
-                                    New state: ${session.currentState}
-                                    Events: ${session.appliedEvents()} 
-                                """
-                            emitter.onSuccess(response)
+                            val session = result.value.toSessionData()
+                            log.info("Deu bôa mesmo: $session")
+                            emitter.onSuccess(session)
                         }
                     }
                 }
