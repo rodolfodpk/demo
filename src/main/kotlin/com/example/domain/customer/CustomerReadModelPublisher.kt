@@ -14,7 +14,7 @@ import javax.inject.Singleton
 class CustomerReadModelPublisher(private val repo: CustomerRepository) : EventPublisher<CustomerEvent> {
 
   companion object {
-    private val log = LoggerFactory.getLogger(CustomerNatsPublisher::class.java)
+    private val log = LoggerFactory.getLogger(CustomerReadModelPublisher::class.java)
   }
 
   override fun publish(id: Int, event: CustomerEvent): Future<Void> {
