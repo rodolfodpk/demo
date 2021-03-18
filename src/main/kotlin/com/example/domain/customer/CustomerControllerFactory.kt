@@ -19,7 +19,7 @@ import javax.inject.Singleton
 class CustomerControllerFactory {
 
     @Inject
-    private lateinit var natsPublish : CustomerNatsProjector
+    private lateinit var natsPublish : CustomerNatsPublisher
 
     @Bean
     @Singleton
@@ -29,31 +29,9 @@ class CustomerControllerFactory {
 
     @Bean
     @Singleton
-    fun repo(@Named("readDb") readDb: PgPool): CustomerRepository {
-        return CustomerRepository(readDb)
-    }
-
-    @Bean
-    @Singleton
-    @Named("readModelProjector")
-    fun readModelProjector(repository: CustomerRepository): CustomerReadModelProjector {
-        return CustomerReadModelProjector(repository)
-    }
-
-    /*@Bean
-    @Singleton
-    @Named("readModel")
-    fun publisher(projector: CustomerReadModelProjector, @Named("writeDb") writeDb: PgPool):
-            PgcEventsPublisher<CustomerEvent> {
-        return PgcEventsPublisher(projector, "Customer", writeDb, customerJson)
-    }*/
-
-    @Bean
-    @Singleton
     @Primary
     @Named("nats")
-    fun publisherNats(@Named("writeDb") writeDb: PgPool):
-            PgcEventsPublisher<CustomerEvent> {
+    fun publisherNats(@Named("writeDb") writeDb: PgPool): PgcEventsPublisher<CustomerEvent> {
         return PgcEventsPublisher(natsPublish, "Customer", writeDb, customerJson)
     }
 

@@ -27,7 +27,7 @@ micronaut {
 }
 
 val vertxVertion= "4.0.3"
-val crabzillaVersion = "0.0.9-snapshot-3"
+val crabzillaVersion = "0.0.9-snapshot-4"
 val kotlinSerializationVersion = "1.1.0"
 
 dependencies {
@@ -55,20 +55,20 @@ application {
     mainClass.set("com.example.ApplicationKt")
 }
 java {
-    sourceCompatibility = JavaVersion.toVersion("11")
+    sourceCompatibility = JavaVersion.toVersion("1.8")
 
 }
 
 tasks {
     compileKotlin {
         kotlinOptions {
-            jvmTarget = "11"
+            jvmTarget = "1.8"
             freeCompilerArgs = listOf("-Xallow-result-return-type")
         }
     }
     compileTestKotlin {
         kotlinOptions {
-            jvmTarget = "11"
+            jvmTarget = "1.8"
             freeCompilerArgs = listOf("-Xallow-result-return-type")
         }
     }
