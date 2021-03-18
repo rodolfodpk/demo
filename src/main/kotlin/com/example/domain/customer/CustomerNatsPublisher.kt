@@ -17,6 +17,10 @@ class CustomerNatsPublisher(val natsPublihser : NatsStreamingPublisher) : EventP
         const val targetTopic = "foo"
     }
 
+    init {
+        log.info("I'm up")
+    }
+
     override fun publish(id: Int, event: CustomerEvent): Future<Void> {
         log.info("Will publish event $event to topic $targetTopic")
         natsPublihser.publish(targetTopic, event)

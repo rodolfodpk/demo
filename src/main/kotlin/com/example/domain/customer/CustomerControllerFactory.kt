@@ -6,7 +6,6 @@ import io.github.crabzilla.pgc.PgcEventsPublisher
 import io.micronaut.context.annotation.Bean
 import io.micronaut.context.annotation.ConfigurationProperties
 import io.micronaut.context.annotation.Factory
-import io.micronaut.context.annotation.Primary
 import io.vertx.core.Vertx
 import io.vertx.pgclient.PgConnectOptions
 import io.vertx.pgclient.PgPool
@@ -29,7 +28,14 @@ class CustomerControllerFactory {
 
     @Bean
     @Singleton
-    @Primary
+    @Named("read-model")
+    fun publisherReadmodel(@Named("writeDb") writeDb: PgPool, readModelPublisher: CustomerReadModelPublisher)
+    : PgcEventsPublisher<CustomerEvent> {
+        return PgcEventsPublisher(readModelPublisher, "Customer", writeDb, customerJson)
+    }
+
+    @Bean
+    @Singleton
     @Named("nats")
     fun publisherNats(@Named("writeDb") writeDb: PgPool): PgcEventsPublisher<CustomerEvent> {
         return PgcEventsPublisher(natsPublish, "Customer", writeDb, customerJson)
@@ -70,7 +76,7 @@ class WriteDbConfig  {
     var dbName: String? = "example1_write"
     var dbUser: String? = "user1"
     var dbPassword: String? = "pwd1"
-    var poolSize: Int = 7
+    var poolSize: Int = 24
 }
 
 @ConfigurationProperties("read.database")
@@ -80,5 +86,5 @@ class ReadDbConfig  {
     var dbName: String? = "example1_read"
     var dbUser: String? = "user1"
     var dbPassword: String? = "pwd1"
-    var poolSize: Int = 7
+    var poolSize: Int = 24
 }
