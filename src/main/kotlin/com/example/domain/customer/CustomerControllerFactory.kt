@@ -76,7 +76,7 @@ class WriteDbConfig  {
     var dbName: String? = "example1_write"
     var dbUser: String? = "user1"
     var dbPassword: String? = "pwd1"
-    var poolSize: Int = 24
+    var poolSize: Int = 6
 }
 
 @ConfigurationProperties("read.database")
@@ -86,5 +86,5 @@ class ReadDbConfig  {
     var dbName: String? = "example1_read"
     var dbUser: String? = "user1"
     var dbPassword: String? = "pwd1"
-    var poolSize: Int = 24
+    var poolSize: Int = 6
 }
