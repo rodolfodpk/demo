@@ -27,7 +27,7 @@ micronaut {
 }
 
 val vertxVertion= "4.0.3"
-val crabzillaVersion = "0.0.9-snapshot-3"
+val crabzillaVersion = "0.0.9-snapshot-4"
 val kotlinSerializationVersion = "1.1.0"
 
 dependencies {
@@ -45,6 +45,7 @@ dependencies {
     implementation("io.github.crabzilla:crabzilla-core:$crabzillaVersion")
     implementation("io.github.crabzilla:crabzilla-pg-client:$crabzillaVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinSerializationVersion")
+    implementation("io.nats:java-nats-streaming:2.2.3")
 
     runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -54,20 +55,20 @@ application {
     mainClass.set("com.example.ApplicationKt")
 }
 java {
-    sourceCompatibility = JavaVersion.toVersion("1.8")
+    sourceCompatibility = JavaVersion.toVersion("11")
 
 }
 
 tasks {
     compileKotlin {
         kotlinOptions {
-            jvmTarget = "1.8"
+            jvmTarget = "11"
             freeCompilerArgs = listOf("-Xallow-result-return-type")
         }
     }
     compileTestKotlin {
         kotlinOptions {
-            jvmTarget = "1.8"
+            jvmTarget = "11"
             freeCompilerArgs = listOf("-Xallow-result-return-type")
         }
     }

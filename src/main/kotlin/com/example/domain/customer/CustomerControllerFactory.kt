@@ -10,11 +10,15 @@ import io.vertx.core.Vertx
 import io.vertx.pgclient.PgConnectOptions
 import io.vertx.pgclient.PgPool
 import io.vertx.sqlclient.PoolOptions
+import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
 
 @Factory
 class CustomerControllerFactory {
+
+    @Inject
+    private lateinit var natsPublish : CustomerNatsPublisher
 
     @Bean
     @Singleton
@@ -24,21 +28,17 @@ class CustomerControllerFactory {
 
     @Bean
     @Singleton
-    fun repo(@Named("readDb") readDb: PgPool): CustomerRepository {
-        return CustomerRepository(readDb)
+    @Named("read-model")
+    fun publisherReadmodel(@Named("writeDb") writeDb: PgPool, readModelPublisher: CustomerReadModelPublisher)
+    : PgcEventsPublisher<CustomerEvent> {
+        return PgcEventsPublisher(readModelPublisher, "Customer", writeDb, customerJson)
     }
 
     @Bean
     @Singleton
-    fun readModelProjector(repository: CustomerRepository): CustomerReadModelProjector {
-        return CustomerReadModelProjector(repository)
-    }
-
-    @Bean
-    @Singleton
-    fun publisher(projector: CustomerReadModelProjector, @Named("writeDb") writeDb: PgPool):
-            PgcEventsPublisher<CustomerEvent> {
-        return PgcEventsPublisher(projector, customerConfig.name.value, writeDb, customerJson)
+    @Named("nats")
+    fun publisherNats(@Named("writeDb") writeDb: PgPool): PgcEventsPublisher<CustomerEvent> {
+        return PgcEventsPublisher(natsPublish, "Customer", writeDb, customerJson)
     }
 
     @Singleton
@@ -76,7 +76,7 @@ class WriteDbConfig  {
     var dbName: String? = "example1_write"
     var dbUser: String? = "user1"
     var dbPassword: String? = "pwd1"
-    var poolSize: Int = 7
+    var poolSize: Int = 24
 }
 
 @ConfigurationProperties("read.database")
@@ -86,5 +86,5 @@ class ReadDbConfig  {
     var dbName: String? = "example1_read"
     var dbUser: String? = "user1"
     var dbPassword: String? = "pwd1"
-    var poolSize: Int = 7
+    var poolSize: Int = 24
 }
