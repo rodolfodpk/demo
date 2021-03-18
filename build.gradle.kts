@@ -55,20 +55,20 @@ application {
     mainClass.set("com.example.ApplicationKt")
 }
 java {
-    sourceCompatibility = JavaVersion.toVersion("1.8")
+    sourceCompatibility = JavaVersion.toVersion("11")
 
 }
 
 tasks {
     compileKotlin {
         kotlinOptions {
-            jvmTarget = "1.8"
+            jvmTarget = "11"
             freeCompilerArgs = listOf("-Xallow-result-return-type")
         }
     }
     compileTestKotlin {
         kotlinOptions {
-            jvmTarget = "1.8"
+            jvmTarget = "11"
             freeCompilerArgs = listOf("-Xallow-result-return-type")
         }
     }
