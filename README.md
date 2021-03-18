@@ -59,3 +59,7 @@ cd demo
 docker-compose down -v
 docker-compose up
 ```
+
+## Design
+
+![GitHub Logo](/cqrs-arch.png)
