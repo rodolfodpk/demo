@@ -28,21 +28,21 @@ gradle build
 sudo docker run -d --name=nats-stream -p 4222:4222 -p 6222:6222 -p 8222:8222  nats-streaming --user al --pass alisson
 ```
 
-4. Now let's start the Postgres database
+5. Now let's start the Postgres database
 
 ```bash
 cd demo
 docker-compose up
 ```
 
-5. Finally, let's run this demo application
+6. Finally, let's run this demo application
 
 ```bash
 cd demo
 gradle run
 ```
 
-6. Then lets do a request:
+7. Then lets do a request:
 
 ```bash
 wget -O- http://localhost:8080/hello
