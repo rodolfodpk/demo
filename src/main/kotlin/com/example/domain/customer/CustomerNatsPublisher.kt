@@ -1,8 +1,8 @@
 package com.example.domain.customer
 
 
-import com.example.nats.publisher.NatsStreamingPublisher
 import io.github.crabzilla.core.EventPublisher
+import io.micronaut.natsstreaming.publisher.NatsStreamingPublisher
 import io.vertx.core.Future
 import org.slf4j.LoggerFactory
 import javax.inject.Named
@@ -10,7 +10,7 @@ import javax.inject.Singleton
 
 @Singleton
 @Named("nats-publisher")
-class CustomerNatsPublisher(val natsPublihser : NatsStreamingPublisher) : EventPublisher<CustomerEvent> {
+class CustomerNatsPublisher(private val natsPublisher : NatsStreamingPublisher) : EventPublisher<CustomerEvent> {
 
     companion object {
         private val log = LoggerFactory.getLogger(CustomerNatsPublisher::class.java)
@@ -23,7 +23,7 @@ class CustomerNatsPublisher(val natsPublihser : NatsStreamingPublisher) : EventP
 
     override fun publish(id: Int, event: CustomerEvent): Future<Void> {
         log.info("Will publish event $event to topic $targetTopic")
-        natsPublihser.publish(targetTopic, event)
+        natsPublisher.publish(targetTopic, event)
         return Future.succeededFuture()
     }
 }

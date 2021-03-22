@@ -45,7 +45,8 @@ dependencies {
     implementation("io.github.crabzilla:crabzilla-core:$crabzillaVersion")
     implementation("io.github.crabzilla:crabzilla-pg-client:$crabzillaVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinSerializationVersion")
-    implementation("io.nats:java-nats-streaming:2.2.3")
+
+    implementation("io.micronaut.natsstreaming:micronaut-nats:1.0.0.BUILD-SNAPSHOT")
 
     runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
