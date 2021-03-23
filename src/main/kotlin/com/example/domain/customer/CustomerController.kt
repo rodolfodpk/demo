@@ -1,8 +1,5 @@
-package com.example
+package com.example.domain.customer
 
-import com.example.domain.customer.Customer
-import com.example.domain.customer.CustomerCommand
-import com.example.domain.customer.CustomerEvent
 import io.github.crabzilla.core.CommandController
 import io.github.crabzilla.core.CommandMetadata
 import io.github.crabzilla.core.Either

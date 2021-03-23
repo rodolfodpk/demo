@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.example</groupId>
+  <artifactId>demo</artifactId>
+  <version>0.1</version>
+
+  <properties>
+    <vertx.version>4.0.3</vertx.version>
+    <jooq.version>3.14.8</jooq.version>
+    <postgresql.version>42.2.16</postgresql.version>
+    <jdbc.user>user1</jdbc.user>
+    <jdbc.password>pwd1</jdbc.password>
+    <jdbc.url>jdbc:postgresql:example1_read</jdbc.url>
+    <jdbc.driver>org.postgresql.Driver</jdbc.driver>
+  </properties>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-core</artifactId>
+      <version>${vertx.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jooq</groupId>
+      <artifactId>jooq</artifactId>
+      <version>${jooq.version}</version>
+    </dependency>
+
+  </dependencies>
+
+  <profiles>
+    <profile>
+      <id>jooq</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq-codegen-maven</artifactId>
+            <version>${jooq.version}</version>
+            <!-- The plugin should hook into the generate goal -->
+            <executions>
+              <execution>
+                <goals>
+                  <goal>generate</goal>
+                </goals>
+              </execution>
+            </executions>
+            <dependencies>
+              <dependency>
+                <groupId>org.jooq</groupId>
+                <artifactId>jooq-meta</artifactId>
+                <version>${jooq.version}</version>
+              </dependency>
+              <dependency>
+                <groupId>org.jooq</groupId>
+                <artifactId>jooq-codegen</artifactId>
+                <version>${jooq.version}</version>
+              </dependency>
+              <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${postgresql.version}</version>
+              </dependency>
+            </dependencies>
+            <configuration>
+              <jdbc>
+                <driver>${jdbc.driver}</driver>
+                <url>${jdbc.url}</url>
+                <user>${jdbc.user}</user>
+                <password>${jdbc.password}</password>
+              </jdbc>
+              <generator>
+                <database>
+                  <name>org.jooq.meta.postgres.PostgresDatabase</name>
+                  <includes>.*</includes>
+                  <excludes></excludes>
+                  <!-- In case your database supports catalogs, e.g. SQL Server:
+                  <inputCatalog>public</inputCatalog>
+                    -->
+                  <inputSchema>public</inputSchema>
+<!--                  <forcedTypes>-->
+<!--                    <forcedType>-->
+<!--                      <userType>io.vertx.core.json.JsonObject</userType>-->
+<!--                      <binding>com.example.infra.jooq.JooqPSqlJsonbBinding</binding>-->
+<!--                      <includeExpression>.*JSON.*</includeExpression>-->
+<!--                      <includeTypes>.*</includeTypes>-->
+<!--                    </forcedType>-->
+<!--                    <forcedType>-->
+<!--                      <userType>java.time.LocalDateTime</userType>-->
+<!--                      <converter>org.jooq.impl.TimestampToLocalDateTimeConverter</converter>-->
+<!--                      <expression>created_at|provisioning_date|date</expression>-->
+<!--                      <types>.*</types>-->
+<!--                    </forcedType>-->
+<!--                  </forcedTypes>-->
+                </database>
+                <target>
+                  <packageName>com.example.read</packageName>
+                  <directory>src/main/java</directory>
+                </target>
+                <generate>
+                  <pojos>false</pojos>
+                  <daos>false</daos>
+                  <fluentSetters>true</fluentSetters>
+                </generate>
+              </generator>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+</project>
