@@ -22,7 +22,7 @@ private class CustomerComponentsFactory {
     @Bean
     @Singleton
     @Named("read-model")
-    fun readModelPublisher(@Named("writeDb") writeDb: PgPool, readModelPublisher: CustomerDomainEventsPublisher)
+    fun readModelPublisher(@Named("writeDb") writeDb: PgPool, readModelPublisher: CustomerPrivatePublisher)
     : PgcEventsJsonPublisher {
         return PgcEventsJsonPublisher(readModelPublisher, customerConfig.name, writeDb)
     }
@@ -30,7 +30,7 @@ private class CustomerComponentsFactory {
     @Bean
     @Singleton
     @Named("nats")
-    fun natsPublisher(@Named("writeDb") writeDb: PgPool, natsPublisher: CustomerIntegrationEventsPublisher)
+    fun natsPublisher(@Named("writeDb") writeDb: PgPool, natsPublisher: CustomerPublicPublisher)
             : PgcEventsJsonPublisher {
         return PgcEventsJsonPublisher(natsPublisher, customerConfig.name, writeDb)
     }

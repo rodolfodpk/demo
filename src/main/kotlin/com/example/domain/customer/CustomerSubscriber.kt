@@ -22,15 +22,14 @@ import javax.inject.Named
 import javax.inject.Singleton
 
 /**
- * To update customer read model given events
+ * To update customer read model given events.
+ * Single writer?
  */
 @Singleton
-class CustomerReadModelSubscriber(
-    nats: StreamingConnection,
-    @Named("jooq-style") private val repo: ICustomerRepository) {
+class CustomerSubscriber(nats: StreamingConnection, @Named("jooq-style") private val repo: ICustomerRepository) {
 
     companion object {
-        private val log = LoggerFactory.getLogger(CustomerReadModelSubscriber::class.java)
+        private val log = LoggerFactory.getLogger(CustomerSubscriber::class.java)
     }
 
     init {
@@ -39,7 +38,7 @@ class CustomerReadModelSubscriber(
         nats.subscribe(privateTopic(customerConfig.name),  { msg: Message ->
             log.info("I received $msg")
             val asJson = JsonObject(String(msg.data))
-            log.info(asJson.encodePrettily())
+            log.info("Message: ${asJson.encodePrettily()}")
             val metadata = asJson.getJsonObject("metadata")
             val aggregateId = metadata.getInteger("aggregateId")
             val eventId = metadata.getLong("eventId")
@@ -48,7 +47,7 @@ class CustomerReadModelSubscriber(
         }, opt)
     }
 
-    fun consume(eventId: Long, id: Int, eventAsJson: JsonObject): Future<Void> {
+    private fun consume(eventId: Long, id: Int, eventAsJson: JsonObject): Future<Void> {
         val event = customerJson.decodeFromString(DOMAIN_EVENT_SERIALIZER, eventAsJson.toString()) as CustomerEvent
         log.info("Will publish event $event to read model")
         return when (event) {
