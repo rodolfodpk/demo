@@ -35,7 +35,7 @@ class CustomerReadModelProjector(nats: StreamingConnection,
 
     init {
         val opt = SubscriptionOptions.Builder().deliverAllAvailable().build()
-        val topic = customerConfig.boundedContextName.name
+        val topic = "example1"
         log.info("I'm up and subscribing to customer events from topic $topic")
         nats.subscribe(topic,  { msg: Message ->
             log.info("I received $msg")
