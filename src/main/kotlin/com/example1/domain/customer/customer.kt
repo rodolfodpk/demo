@@ -156,10 +156,10 @@ object CustomerCommandHandler : CommandHandler<Customer, CustomerCommand, Custom
 }
 
 val customerConfig = AggregateRootConfig(
-  BoundedContextName("example1"),
   AggregateRootName("Customer"),
   SnapshotTableName("customer_snapshots"),
   customerEventHandler,
   customerCmdValidator,
-  CustomerCommandHandler, customerJson
+  CustomerCommandHandler,
+  customerJson
 )
