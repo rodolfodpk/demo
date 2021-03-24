@@ -17,8 +17,6 @@ import javax.inject.Singleton
 @Factory
 private class AppFactory {
 
-    val boundedContextName =  BoundedContextName("example1")
-
     @Bean
     @Singleton
     fun outboxPublisher(publisher: AppOutboxPublisher, @Named("writeDb") writeDb: PgPool): PgcOutboxPublisher {

@@ -20,8 +20,6 @@ class AppOutboxPublisher(private val nats: StreamingConnection) : JsonEventPubli
         private val log = LoggerFactory.getLogger(AppOutboxPublisher::class.java)
     }
 
-    private val boundedContextName = BoundedContextName("example1")
-
     init {
         log.info("I'm up and will publish events to ${boundedContextName.name}")
     }
