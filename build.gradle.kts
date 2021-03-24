@@ -26,7 +26,7 @@ micronaut {
     }
 }
 
-val vertxVertion= "4.0.3"
+val vertxVertion= "4.0.2"
 val crabzillaVersion = "0.0.9-snapshot-4"
 val kotlinSerializationVersion = "1.1.0"
 
@@ -46,6 +46,9 @@ dependencies {
     implementation("io.github.crabzilla:crabzilla-pg-client:$crabzillaVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinSerializationVersion")
     implementation("io.nats:java-nats-streaming:2.2.3")
+
+    api("io.vertx:vertx-pg-client")
+    api("io.github.zero88:jooqx-core:1.0.0")
 
     runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")

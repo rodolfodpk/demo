@@ -1,22 +1,25 @@
-package com.example.domain.customer
+package com.example1.domain.customer
 
-import com.example.domain.customer.CustomerCommand.*
-import com.example.domain.customer.CustomerEvent.*
+import com.example1.domain.customer.CustomerCommand.ActivateCustomer
+import com.example1.domain.customer.CustomerCommand.DeactivateCustomer
+import com.example1.domain.customer.CustomerCommand.RegisterAndActivateCustomer
+import com.example1.domain.customer.CustomerCommand.RegisterCustomer
+import com.example1.domain.customer.CustomerEvent.CustomerActivated
+import com.example1.domain.customer.CustomerEvent.CustomerDeactivated
+import com.example1.domain.customer.CustomerEvent.CustomerRegistered
 import io.github.crabzilla.core.AggregateRoot
 import io.github.crabzilla.core.AggregateRootConfig
 import io.github.crabzilla.core.AggregateRootName
+import io.github.crabzilla.core.BoundedContextName
 import io.github.crabzilla.core.Command
 import io.github.crabzilla.core.CommandHandler
 import io.github.crabzilla.core.CommandHandler.ConstructorResult
 import io.github.crabzilla.core.CommandValidator
 import io.github.crabzilla.core.DomainEvent
 import io.github.crabzilla.core.EventHandler
-import io.github.crabzilla.core.EventSerializer
 import io.github.crabzilla.core.Snapshot
 import io.github.crabzilla.core.SnapshotTableName
 import io.github.crabzilla.core.StatefulSession
-import io.vertx.core.json.JsonObject
-import io.vertx.kotlin.core.json.jsonObjectOf
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -152,25 +155,11 @@ object CustomerCommandHandler : CommandHandler<Customer, CustomerCommand, Custom
     }
 }
 
-/**
- * To export domain events into integration events
- */
-
-class CustomerEventSer : EventSerializer<CustomerEvent> {
-  override fun toJson(e: CustomerEvent): Result<JsonObject> {
-    return runCatching {
-      when (e) {
-        is CustomerRegistered -> jsonObjectOf(Pair("companyId", e.id), Pair("name", e.name))
-        is CustomerActivated -> jsonObjectOf(Pair("reason", e.reason))
-        is CustomerDeactivated -> jsonObjectOf(Pair("reason", e.reason))
-      }
-    }
-  }
-}
-
-// TODO class CustomerEventDes : EventDeserializer<IntegrationEvent>
-
 val customerConfig = AggregateRootConfig(
-  AggregateRootName("Customer"), SnapshotTableName("customer_snapshots"),
-  customerEventHandler, customerCmdValidator, CustomerCommandHandler, customerJson
+  BoundedContextName("example1"),
+  AggregateRootName("Customer"),
+  SnapshotTableName("customer_snapshots"),
+  customerEventHandler,
+  customerCmdValidator,
+  CustomerCommandHandler, customerJson
 )
