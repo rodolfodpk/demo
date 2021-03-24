@@ -61,4 +61,4 @@ docker-compose up
 
 ## Design
 
-![GitHub Logo](/cqrs-arch.png)
+![GitHub Logo](/cqrs-arch-outbox.png)
