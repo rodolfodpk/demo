@@ -1,7 +1,6 @@
 package com.example1.domain.customer
 
 import com.example.read.tables.CustomerSummary.CUSTOMER_SUMMARY
-import com.example1.boundedContextName
 import com.example1.domain.customer.CustomerEvent.CustomerActivated
 import com.example1.domain.customer.CustomerEvent.CustomerDeactivated
 import com.example1.domain.customer.CustomerEvent.CustomerRegistered
@@ -36,7 +35,7 @@ class CustomerReadModelProjector(nats: StreamingConnection,
 
     init {
         val opt = SubscriptionOptions.Builder().deliverAllAvailable().build()
-        val topic = boundedContextName.name
+        val topic = "example1"
         log.info("I'm up and subscribing to customer events from topic $topic")
         nats.subscribe(topic,  { msg: Message ->
             log.info("I received $msg")
