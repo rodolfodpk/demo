@@ -1,4 +1,4 @@
-package com.example.infra
+package com.example1.infra
 
 import io.vertx.core.AsyncResult
 import io.vertx.core.Promise

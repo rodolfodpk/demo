@@ -1,11 +1,10 @@
-package com.example.domain.customer
+package com.example1.domain.customer
 
-import com.example.domain.customer.CustomerEvent.CustomerActivated
-import com.example.domain.customer.CustomerEvent.CustomerDeactivated
-import com.example.domain.customer.CustomerEvent.CustomerRegistered
-import com.example.infra.handleVoid
-import com.example.infra.privateTopic
 import com.example.read.tables.CustomerSummary.CUSTOMER_SUMMARY
+import com.example1.domain.customer.CustomerEvent.CustomerActivated
+import com.example1.domain.customer.CustomerEvent.CustomerDeactivated
+import com.example1.domain.customer.CustomerEvent.CustomerRegistered
+import com.example1.infra.handleVoid
 import io.github.crabzilla.core.DOMAIN_EVENT_SERIALIZER
 import io.nats.streaming.Message
 import io.nats.streaming.StreamingConnection
@@ -26,30 +25,39 @@ import javax.inject.Singleton
  * Single writer?
  */
 @Singleton
-class CustomerSubscriber(nats: StreamingConnection, @Named("jooq-style") private val repo: ICustomerRepository) {
+class CustomerReadModelProjector(nats: StreamingConnection,
+                                 @Named("jooq-style") private val repo: CustomerRepository
+) {
 
     companion object {
-        private val log = LoggerFactory.getLogger(CustomerSubscriber::class.java)
+        private val log = LoggerFactory.getLogger(CustomerReadModelProjector::class.java)
     }
 
     init {
         val opt = SubscriptionOptions.Builder().deliverAllAvailable().build()
-        log.info("I'm up and subscribing to ${privateTopic(customerConfig.name)}")
-        nats.subscribe(privateTopic(customerConfig.name),  { msg: Message ->
+        val topic = customerConfig.boundedContextName.name
+        log.info("I'm up and subscribing to customer events from topic $topic")
+        nats.subscribe(topic,  { msg: Message ->
             log.info("I received $msg")
             val asJson = JsonObject(String(msg.data))
             log.info("Message: ${asJson.encodePrettily()}")
             val metadata = asJson.getJsonObject("metadata")
+            val aggregateName = metadata.getString("aggregateName")
+            if (customerConfig.name.value != aggregateName) {
+                log.warn("will ignore event $asJson")
+                return@subscribe // ignore event if not related to customer
+            }
             val aggregateId = metadata.getInteger("aggregateId")
             val eventId = metadata.getLong("eventId")
             val eventAsJson = asJson.getJsonObject("eventPayload")
             consume(eventId, aggregateId, eventAsJson)
+            // TODO ack
         }, opt)
     }
 
     private fun consume(eventId: Long, id: Int, eventAsJson: JsonObject): Future<Void> {
         val event = customerJson.decodeFromString(DOMAIN_EVENT_SERIALIZER, eventAsJson.toString()) as CustomerEvent
-        log.info("Will publish event $event to read model")
+        log.info("Will project event $event to read model")
         return when (event) {
             is CustomerRegistered -> repo.upsert(id, event.name, false)
             is CustomerActivated -> repo.updateStatus(id, true)
@@ -57,7 +65,7 @@ class CustomerSubscriber(nats: StreamingConnection, @Named("jooq-style") private
         }
     }
 
-    interface ICustomerRepository {
+    interface CustomerRepository {
         fun upsert(id: Int, name: String, isActive: Boolean): Future<Void>
         fun updateStatus(id: Int, isActive: Boolean): Future<Void>
     }
@@ -67,7 +75,7 @@ class CustomerSubscriber(nats: StreamingConnection, @Named("jooq-style") private
      */
     @Singleton
     @Named("pg-client-style")
-    class PgClientCustomerRepository(@Named("readDb") private val pool: PgPool) : ICustomerRepository {
+    class PgClientCustomerRepository(@Named("readDb") private val pool: PgPool) : CustomerRepository {
 
         override fun upsert(id: Int, name: String, isActive: Boolean): Future<Void> {
             val promise = Promise.promise<Void>()
@@ -87,7 +95,7 @@ class CustomerSubscriber(nats: StreamingConnection, @Named("jooq-style") private
 
     @Singleton
     @Named("jooq-style")
-    class JooqCustomerRepository(val jooqx: ReactiveJooqx) : ICustomerRepository {
+    class JooqCustomerRepository(private val jooqx: ReactiveJooqx) : CustomerRepository {
 
         override fun upsert(id: Int, name: String, isActive: Boolean): Future<Void> {
             val promise = Promise.promise<Void>()

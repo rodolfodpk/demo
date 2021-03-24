@@ -1,6 +1,7 @@
-package com.example.infra
+package com.example1.infra
 
 import io.micronaut.context.annotation.Factory
+import io.micronaut.context.annotation.Prototype
 import io.micronaut.context.annotation.Value
 import io.nats.streaming.Options
 import io.nats.streaming.StreamingConnection
@@ -11,10 +12,10 @@ import javax.inject.Singleton
 @Factory
 class NatsStreamFactory {
 
-    @Singleton
-    fun createNatConnection(natsStreamingConfig: NatsStreamingConfig): StreamingConnection {
-        val options = natsStreamingConfig.toOptions()
-        val cf = StreamingConnectionFactory(options)
+    @Prototype
+    fun createNatConnection(config: NatsStreamingConfig): StreamingConnection {
+        config.clientId = UUID.randomUUID().toString()
+        val cf = StreamingConnectionFactory(config.toOptions())
         return try {
             cf.createConnection()
         } catch (e: Exception) {
@@ -28,22 +29,22 @@ class NatsStreamFactory {
         val NATS_PROTOCOL = "nats://"
 
         @Value("\${nats.host}")
-        private lateinit var host :String
+        lateinit var host :String
 
         @Value("\${nats.port}")
-        private var port :Int = 4222
+        var port :Int = 4222
 
         @Value("\${nats.user}")
-        private lateinit var user :String
+        lateinit var user :String
 
         @Value("\${nats.password}")
-        private lateinit var password :String
+        lateinit var password :String
 
         @Value("\${nats.client-id}")
-        private lateinit var clientId :String
+        lateinit var clientId :String
 
         @Value("\${nats.cluster-id}")
-        private lateinit var clusterId :String
+        lateinit var clusterId :String
 
 
         fun toOptions(): Options? {
@@ -54,7 +55,7 @@ class NatsStreamFactory {
                 .build()
         }
 
-        private fun getUrl(): String? {
+        fun getUrl(): String? {
             var url: String? = null
             url = if (Objects.nonNull(user) || Objects.nonNull(password)) {
                 "$NATS_PROTOCOL$user:$password@$host:$port"

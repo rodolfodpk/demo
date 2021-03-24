@@ -1,4 +1,4 @@
-package com.example.domain.customer
+package com.example1.domain.customer
 
 import io.github.crabzilla.core.AggregateRoot
 import io.github.crabzilla.core.Command

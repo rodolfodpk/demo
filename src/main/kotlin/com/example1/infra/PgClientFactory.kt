@@ -1,4 +1,4 @@
-package com.example.infra
+package com.example1.infra
 
 import io.micronaut.context.annotation.ConfigurationProperties
 import io.micronaut.context.annotation.Factory
