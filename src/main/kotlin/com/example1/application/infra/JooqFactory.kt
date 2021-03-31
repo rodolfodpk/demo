@@ -1,6 +1,7 @@
-package com.example1.infra
+package com.example1.application.infra
 
 import io.micronaut.context.annotation.Bean
+import io.micronaut.context.annotation.Context
 import io.micronaut.context.annotation.Factory
 import io.vertx.core.Vertx
 import io.vertx.pgclient.PgPool
@@ -10,20 +11,19 @@ import org.jooq.SQLDialect
 import org.jooq.impl.DSL
 import org.jooq.impl.DefaultConfiguration
 import javax.inject.Named
-import javax.inject.Singleton
 
 
 @Factory
 class JooqFactory {
 
     @Bean
-    @Singleton
+    @Context
     fun dsl(): DSLContext {
         return DSL.using(DefaultConfiguration().set(SQLDialect.POSTGRES))
     }
 
     @Bean
-    @Singleton
+    @Context
     fun jooq(vertx: Vertx, dsl: DSLContext, @Named("readDb") readDb: PgPool): ReactiveJooqx {
         return ReactiveJooqx.builder().vertx(vertx)
             .dsl(dsl)

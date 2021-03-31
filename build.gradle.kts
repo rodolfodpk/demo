@@ -7,8 +7,10 @@ plugins {
     id("io.micronaut.application") version "1.4.2"
 }
 
+// https://octoperf.com/blog/2019/07/25/kraken-gradle-multi-project-builds-for-maven-users/#dependency-management
+
 version = "0.1"
-group = "com.example"
+group = "com.example1"
 
 val kotlinVersion=project.properties.get("kotlinVersion")
 
@@ -22,13 +24,15 @@ micronaut {
     testRuntime("kotest")
     processing {
         incremental(true)
-        annotations("com.example.*")
+        annotations("com.example1.*")
     }
 }
 
 val vertxVertion= "4.0.2"
 val crabzillaVersion = "0.0.9-snapshot-4"
 val kotlinSerializationVersion = "1.1.0"
+
+// https://tomgregory.com/how-to-use-gradle-api-vs-implementation-dependencies-with-the-java-library-plugin/
 
 dependencies {
     implementation("io.micronaut:micronaut-validation")
@@ -57,6 +61,7 @@ dependencies {
 application {
     mainClass.set("com.example.ApplicationKt")
 }
+
 java {
     sourceCompatibility = JavaVersion.toVersion("11")
 

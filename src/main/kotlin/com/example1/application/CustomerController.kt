@@ -1,8 +1,10 @@
-package com.example1.domain.customer
+package com.example1.application
 
+import com.example1.core.customer.Customer
+import com.example1.core.customer.CustomerCommand
+import com.example1.core.customer.CustomerEvent
 import io.github.crabzilla.core.CommandController
 import io.github.crabzilla.core.CommandMetadata
-import io.github.crabzilla.core.Either
 import io.github.crabzilla.core.SessionData
 import io.github.crabzilla.core.StatefulSession
 import io.micronaut.http.annotation.Controller
@@ -24,33 +26,20 @@ class CustomerController(@Inject private val controller: CommandController<Custo
     @Get("/")
     fun index(): Single<SessionData> {
         val newId = id.incrementAndGet()
-        log.info("Vai gerar um comando $newId")
+        log.info("*** Will generate a new command $newId")
         val metadata = CommandMetadata(newId)
         val command = CustomerCommand.RegisterCustomer(newId, "customer#$id")
         return Single.create { emitter ->
             controller.handle(metadata, command)
                 .onFailure {
-                    log.error("Deu ruim", it)
+                    log.error("Error", it)
                     emitter.onError(it)
                 }
-                .onSuccess { result: CustomerCommandResult ->
-                    log.info("Deu bôa?")
-                    when (result) {
-                        is Either.Left -> {
-                            val validationErrors: List<String> = result.value
-                            log.warn("Validation errors: $validationErrors")
-                            emitter.onError(IllegalArgumentException(validationErrors.toString()))
-                        }
-                        is Either.Right -> {
-                            val session = result.value.toSessionData()
-                            log.info("Deu bôa mesmo: $session")
-                            emitter.onSuccess(session)
-                        }
-                    }
+                .onSuccess { session: StatefulSession<Customer, CustomerEvent> ->
+                    log.info("Result: ${session.toSessionData()}")
+                    emitter.onSuccess(session.toSessionData())
                 }
         }
     }
 
 }
-
-typealias CustomerCommandResult = Either<List<String>, StatefulSession<Customer, CustomerEvent>>

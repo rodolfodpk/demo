@@ -1,43 +1,55 @@
-package com.example1.infra
+package com.example1.application.infra
 
 import io.micronaut.context.annotation.ConfigurationProperties
+import io.micronaut.context.annotation.Context
 import io.micronaut.context.annotation.Factory
+import io.micronaut.context.annotation.Prototype
 import io.vertx.core.Vertx
 import io.vertx.pgclient.PgConnectOptions
 import io.vertx.pgclient.PgPool
+import io.vertx.pgclient.pubsub.PgSubscriber
 import io.vertx.sqlclient.PoolOptions
 import javax.inject.Named
-import javax.inject.Singleton
 
 @Factory
 class PgClientFactory {
 
-    @Singleton
+    @Context
     @Named("writeDb")
     fun writeDb(vertx: Vertx, config: WriteDbConfig): PgPool {
-        val readOptions = PgConnectOptions()
+        val options = PgConnectOptions()
                 .setPort(config.port!!)
                 .setHost(config.host)
                 .setDatabase(config.dbName)
                 .setUser(config.dbUser)
                 .setPassword(config.dbPassword)
         val pgPoolOptions = PoolOptions().setMaxSize(config.poolSize)
-        return PgPool.pool(vertx, readOptions, pgPoolOptions)
+        return PgPool.pool(vertx, options, pgPoolOptions)
     }
 
-    @Singleton
+    @Context
     @Named("readDb")
     fun readDb(vertx: Vertx, config: ReadDbConfig): PgPool {
-        val readOptions = PgConnectOptions()
+        val options = PgConnectOptions()
                 .setPort(config.port!!)
                 .setHost(config.host)
                 .setDatabase(config.dbName)
                 .setUser(config.dbUser)
                 .setPassword(config.dbPassword)
         val pgPoolOptions = PoolOptions().setMaxSize(config.poolSize)
-        return PgPool.pool(vertx, readOptions, pgPoolOptions)
+        return PgPool.pool(vertx, options, pgPoolOptions)
     }
 
+    @Prototype
+    fun pgSubscriber(vertx: Vertx, config: WriteDbConfig): PgSubscriber {
+        val options = PgConnectOptions()
+            .setPort(config.port!!)
+            .setHost(config.host)
+            .setDatabase(config.dbName)
+            .setUser(config.dbUser)
+            .setPassword(config.dbPassword)
+        return PgSubscriber.subscriber(vertx, options)
+    }
 
     @ConfigurationProperties("write.database")
     class WriteDbConfig  {
