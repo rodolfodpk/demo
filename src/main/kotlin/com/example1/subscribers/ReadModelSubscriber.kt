@@ -30,7 +30,7 @@ class ReadModelSubscriber(nats: StreamingConnection, eventBus: EventBus) {
                 if (ar.failed()) {
                     log.error("When projecting $asJson to $aggregateName", ar.cause())
                 } else {
-                    log.info("$asJson successfully projected to $aggregateName")
+                    log.info("Successfully projected event to $aggregateName")
                 }
             }
             // TODO ack
