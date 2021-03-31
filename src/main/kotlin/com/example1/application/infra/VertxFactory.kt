@@ -1,22 +1,22 @@
-package com.example1.infra
+package com.example1.application.infra
 
 import io.micronaut.context.annotation.Bean
+import io.micronaut.context.annotation.Context
 import io.micronaut.context.annotation.Factory
 import io.vertx.core.Vertx
 import io.vertx.core.eventbus.EventBus
-import javax.inject.Singleton
 
 @Factory
 class VertxFactory {
 
     @Bean
-    @Singleton
+    @Context
     fun vertx(): Vertx {
         return Vertx.vertx()
     }
 
     @Bean
-    @Singleton
+    @Context
     fun eventbus(vertx: Vertx): EventBus {
         return vertx.eventBus()
     }

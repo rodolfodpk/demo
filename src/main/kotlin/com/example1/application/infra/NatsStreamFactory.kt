@@ -1,4 +1,4 @@
-package com.example1.infra
+package com.example1.application.infra
 
 import io.micronaut.context.annotation.Factory
 import io.micronaut.context.annotation.Prototype
@@ -7,14 +7,17 @@ import io.nats.streaming.Options
 import io.nats.streaming.StreamingConnection
 import io.nats.streaming.StreamingConnectionFactory
 import java.util.*
+import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Singleton
 
 @Factory
 class NatsStreamFactory {
 
+    private val connections = AtomicInteger(0)
+
     @Prototype
     fun createNatConnection(config: NatsStreamingConfig): StreamingConnection {
-        config.clientId = UUID.randomUUID().toString()
+        config.clientId = "nats-connection-${connections.incrementAndGet()}"
         val cf = StreamingConnectionFactory(config.toOptions())
         return try {
             cf.createConnection()
